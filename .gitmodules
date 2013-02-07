@@ -1,0 +1,3 @@
+[submodule "hcatalog"]
+	path = hcatalog
+	url = https://github.com/VertiPub/hcatalog.git
