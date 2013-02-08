@@ -128,6 +128,7 @@ startingDir = Dir.pwd
 
 # Move to the workspace defined by hudson and initialize/update the submodule repo
 Dir.chdir(workSpace)
+system "rm -rf ./install-* ./rpms-*"
 system "git submodule init"
 system "git submodule update"
 gitRepoSHA = %x[git rev-parse HEAD]
