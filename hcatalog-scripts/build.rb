@@ -17,6 +17,11 @@ Assumptions:
             d.  The build script will execute in the submodule directory
             e.  The build script will have a non-zero exit if the build fails for any reason
         5.  The install script will generate the proper build root when passed the correct install directory
+            a.  The build script will be passed an "ARTIFACT_VERSION" environment variable
+            b.  The build script will be passed the "DATE_STRING" environment variable should it need it
+            c.  The build script will be passed the "INSTALL_DIR" into which to unpack the artifacts created by the build script
+            d.  The build script will be passed the "RPM_DIR" into which to place the built RPM
+            e.  The build script will inherit the "WORKSPACE"  environment variable
 
 
 =end
@@ -30,6 +35,7 @@ class ParseOptions < Hash
     self[:branchortag] = ''
     self[:subrepo] = ''
     self[:compilescript] = ''
+    self[:installscript] = ''
 
     # define the opts and usage
     opts = OptionParser.new do |opts|
@@ -48,6 +54,10 @@ class ParseOptions < Hash
       opts.on('-c', '--compilescript SCRIPTNAME',
               'The bash script that runs the actual compile commands from the submodule directory') do |string|
         self[:compilescript] = string
+      end
+      opts.on('-i', '--installscript SCRIPTNAME',
+              'The bash script that runs the actual install commands to put files into the rpm generation directory') do |string|
+        self[:installscript] = string
       end
       opts.on_tail('-h', '--help', 'display this help and exit') do
         puts opts
@@ -81,12 +91,23 @@ class ParseOptions < Hash
       puts opts
       raise "FATAL: You must specify the path to the compile script relative to the build root"
     end
+    if (self[:installscript] == '')
+      puts opts
+      raise "FATAL: You must specify the path to the install script relative to the build root"
+    end
+  end
+end
+
+def allocateDir(dirPath)
+  if File.exist?(dirPath) && !File.directory?(dirPath)
+    raise "FATAL: unexepected file found at " + dirPath
+  elsif !File.directory?(dirPath) 
+    Dir.mkdir(dirPath, 0755) 
   end
 end
 
 # Begin with arguments
 arguments = ParseOptions.new(ARGV)
-# BUG: add a test to confirm definition of WORKSPACE
 if ENV['WORKSPACE'].nil?
   raise "FATAL: WORKSPACE environment variable undefined, perhaps you should set it?"
 end
@@ -106,7 +127,6 @@ system "git submodule init"
 system "git submodule update"
 
 # Check out the correct branch of code in preparation to call the build
-# BUG: gitignore the necessary directories that way we won't have to hassle with them
 buildDir = workSpace + "/" + arguments[:submodule]
 Dir.chdir(buildDir)
 branchName = "tobebuilt-" + buildString
@@ -117,11 +137,8 @@ system command
 # and the other for the file system used to emulate the installed root
 installDir = workSpace + "/install-" + buildString
 rpmDir = workSpace + "/rpms-" + buildString
-if File.exist?(rpmDir) && !File.directory?(rpmDir)
-  raise "FATAL: unexepected file found at " + rpmDir
-elsif !File.directory?(rpmDir) 
-  Dir.mkdir(rpmDir, 0755) 
-end
+allocateDir(installDir)
+allocateDir(rpmDir)
 
 # Ok, time to call out to the actual build command
 # BUG: At this point the generated artifact isn't being passed. It's implicitly shared between build & install.
@@ -131,6 +148,12 @@ ENV['ARTIFACT_VERSION'] = arguments[:externalversion]
 ENV['DATE_STRING'] = buildString
 # Run the build
 scriptFullPath = workSpace + "/" + arguments[:compilescript]
+buildCommand = "/bin/sh -ex " + scriptFullPath
+system buildCommand
+
+# Run the install dir create
+ENV['INSTALL_DIR'] = installDir
+scriptFullPath = workSpace + "/" + arguments[:installscript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
 
