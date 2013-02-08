@@ -12,7 +12,7 @@ Assumptions:
         3.  The "wrapper" repository exists at the level of WORKSPACE (ala Jenkins)
         4.  The build script will generate the necessary artifacts to be used by the install script
             a.  The build script will be passed an "ARTIFACT_VERSION" environment variable
-            b.  The build script will be passed the "DATESTRING" environment variable should it need it
+            b.  The build script will be passed the "DATE_STRING" environment variable should it need it
             c.  The build script will inherit the "WORKSPACE"  environment variable
             d.  The build script will execute in the submodule directory
             e.  The build script will have a non-zero exit if the build fails for any reason
@@ -87,7 +87,10 @@ end
 # Begin with arguments
 arguments = ParseOptions.new(ARGV)
 # BUG: add a test to confirm definition of WORKSPACE
-workSpace = ENV['WORKSPACE]'
+if ENV['WORKSPACE'].empty?
+  raise "FATAL: You must specify the external project version."
+end
+workSpace = ENV['WORKSPACE']
 
 # Build the Date String for the "build string"
 
@@ -117,6 +120,12 @@ rpmDir = workSpace + "/rpms-" + buildString
 Dir.mkdir (rpmDir, "0755") 
 
 # Ok, time to call out to the actual build command
+# BUG: At this point the generated artifact isn't being passed. It's implicitly shared between build & install.
+# BUG: This is a *bad* *thing*
+# Set up the environement
+ENV['ARTIFACT_VERSION'] = self[:externalversion]
+ENV['DATE_STRING'] = buildString
+# Run the build
 scriptFullPath = workspace + "/" + arguments[:compilescript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
