@@ -1,6 +1,7 @@
 #!/bin/sh
 
-cd ${INSTALL_DIR}
+mkdir -p --mode=0755 ${INSTALL_DIR}/opt
+cd ${INSTALL_DIR}/opt
 tar -xvzpf ${WORKSPACE}/hcatalog/build/hcatalog-${ARTIFACT_VERSION}.tar.gz
 
 export RPM_NAME=vcc-hcatalog-${ARTIFACT_VERSION}
