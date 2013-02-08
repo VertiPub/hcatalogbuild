@@ -132,7 +132,7 @@ system "git submodule init"
 system "git submodule update"
 gitRepoSHA = %x[git rev-parse HEAD]
 gitRepoOrigin = %x[git remote -v | grep fetch |  awk '{print $2}']
-rpmDescription = "Built under: " + jobURL + "From repository: " + gitRepoOrigin + "From SHA: " + gitRepoSHA
+rpmDescription = "Built under: #{jobURL} From repository: #{gitRepoOrigin} From SHA: #{gitRepoSHA}"
 
 # Check out the correct branch of code in preparation to call the build
 buildDir = workSpace + "/" + arguments[:submodule]
