@@ -117,7 +117,9 @@ system command
 # and the other for the file system used to emulate the installed root
 installDir = workSpace + "/install-" + buildString
 rpmDir = workSpace + "/rpms-" + buildString
-if !File.directory(rpmdir) then
+if File.exist?(rpmDir) && !File.directory?(rpmDir)
+  raise "FATAL: unexepected file found at " + rpmDir
+elsif !File.directory?(rpmDir) 
   Dir.mkdir(rpmDir, 0755) 
 end
 
@@ -128,7 +130,7 @@ end
 ENV['ARTIFACT_VERSION'] = arguments[:externalversion]
 ENV['DATE_STRING'] = buildString
 # Run the build
-scriptFullPath = workspace + "/" + arguments[:compilescript]
+scriptFullPath = workSpace + "/" + arguments[:compilescript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
 
