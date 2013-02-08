@@ -114,8 +114,9 @@ end
 workSpace = ENV['WORKSPACE']
 if ENV['JOB_URL'].nil?
   jobURL = "This build was hand crafted lovingly and without Jenkins"
+else
+  jobURL = ENV['JOB_URL']
 end
-jobURL = ENV['JOB_URL']
 
 # Build the Date String for the "build string"
 
@@ -129,9 +130,9 @@ startingDir = Dir.pwd
 Dir.chdir(workSpace)
 system "git submodule init"
 system "git submodule update"
-gitRepoSHA = system "git rev-parse HEAD"
-gitRepoOrigin = system "git remote -v | grep fetch |  awk '{print $2}'"
-rpmDescription = "\'Built under: " + jobURL + "\nFrom repository: " + gitRepoOrigin + "\nFrom SHA: " + gitRepoSHA + "\'"
+gitRepoSHA = %x[git rev-parse HEAD]
+gitRepoOrigin = %x[git remote -v | grep fetch |  awk '{print $2}']
+rpmDescription = "Built under: " + jobURL + "From repository: " + gitRepoOrigin + "From SHA: " + gitRepoSHA
 
 # Check out the correct branch of code in preparation to call the build
 buildDir = workSpace + "/" + arguments[:submodule]
@@ -161,7 +162,7 @@ system buildCommand
 # Run the install dir create
 ENV['INSTALL_DIR'] = installDir
 ENV['RPM_DIR'] = rpmDir
-ENV['DESCRIPTION'] = rpmDescription
+ENV['DESCRIPTION'] = '"' + rpmDescription + '"'
 scriptFullPath = workSpace + "/" + arguments[:installscript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
