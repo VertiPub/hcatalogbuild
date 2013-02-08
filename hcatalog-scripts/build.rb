@@ -88,7 +88,7 @@ end
 arguments = ParseOptions.new(ARGV)
 # BUG: add a test to confirm definition of WORKSPACE
 if ENV['WORKSPACE'].empty?
-  raise "FATAL: You must specify the external project version."
+  raise "FATAL: WORKSPACE environment variable undefined, perhaps you should set it?"
 end
 workSpace = ENV['WORKSPACE']
 
@@ -117,7 +117,7 @@ system command
 # and the other for the file system used to emulate the installed root
 installDir = workSpace + "/install-" + buildString
 rpmDir = workSpace + "/rpms-" + buildString
-Dir.mkdir (rpmDir, "0755") 
+Dir.mkdir(rpmDir, 0755) 
 
 # Ok, time to call out to the actual build command
 # BUG: At this point the generated artifact isn't being passed. It's implicitly shared between build & install.
