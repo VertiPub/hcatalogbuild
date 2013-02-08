@@ -14,16 +14,21 @@ class ParseOptions < Hash
     super()
     self[:externalversion] = ''
     self[:branchortag] = ''
+    self[:subrepo] = ''
 
     # define the opts and usage
     opts = OptionParser.new do |opts|
       opts.banner = "Usage: #$0 [options]"
-      opts.on('-e', '--externalversion external project version', 'Numeric dot separated string representing the external project like 0.4.0') do |string|
+      opts.on('-e', '--externalversion VERSION', 'Numeric dot separated string representing the external project like 0.4.0') do |string|
         self[:externalversion] = string
       end
       opts.on('-b', '--branchortag DESCRIPTION',
               'A Tag, Branch or SHA to define what should be checked out from the subproject to build') do |string|
         self[:branchortag] = string
+      end
+      opts.on('-s', '--submodule DIRECTORY',
+              'The directory containing the sub-repository relative to the build root') do |string|
+        self[:submodule] = string
       end
       opts.on_tail('-h', '--help', 'display this help and exit') do
         puts opts
@@ -43,14 +48,25 @@ class ParseOptions < Hash
     # check sanity
     if (self[:externalversion] == '')
       puts opts
-      raise ExternalVersionUnspecified
+      raise "FATAL: You must specify the external project version."
     end
     if (self[:branchortag] == '')
       puts opts
-      raise BranchPointNotSpecified
+      raise "FATAL: You must specify a branch, tag or SHA in the submodule to sync for the build"
+    end
+    if (self[:submodule] == '')
+      puts opts
+      raise "FATAL: You must specify the submodule directory to build, relative to the build root"
     end
   end
 end
 
+# Begin with arguments
 arguments = ParseOptions.new(ARGV)
+
+# Build the Date String for the "build string"
+
+buildTime = Time.now
+
+buildString = buildTime.strftime("%Y%m%d%H%M")
 
