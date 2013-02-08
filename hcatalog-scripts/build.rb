@@ -162,7 +162,7 @@ system buildCommand
 # Run the install dir create
 ENV['INSTALL_DIR'] = installDir
 ENV['RPM_DIR'] = rpmDir
-ENV['DESCRIPTION'] = '"' + rpmDescription + '"'
+ENV['DESCRIPTION'] = rpmDescription
 scriptFullPath = workSpace + "/" + arguments[:installscript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
