@@ -87,7 +87,7 @@ end
 # Begin with arguments
 arguments = ParseOptions.new(ARGV)
 # BUG: add a test to confirm definition of WORKSPACE
-if ENV['WORKSPACE'].empty?
+if ENV['WORKSPACE'].nil?
   raise "FATAL: WORKSPACE environment variable undefined, perhaps you should set it?"
 end
 workSpace = ENV['WORKSPACE']
@@ -117,13 +117,15 @@ system command
 # and the other for the file system used to emulate the installed root
 installDir = workSpace + "/install-" + buildString
 rpmDir = workSpace + "/rpms-" + buildString
-Dir.mkdir(rpmDir, 0755) 
+if !File.directory(rpmdir) then
+  Dir.mkdir(rpmDir, 0755) 
+end
 
 # Ok, time to call out to the actual build command
 # BUG: At this point the generated artifact isn't being passed. It's implicitly shared between build & install.
 # BUG: This is a *bad* *thing*
 # Set up the environement
-ENV['ARTIFACT_VERSION'] = self[:externalversion]
+ENV['ARTIFACT_VERSION'] = arguments[:externalversion]
 ENV['DATE_STRING'] = buildString
 # Run the build
 scriptFullPath = workspace + "/" + arguments[:compilescript]
