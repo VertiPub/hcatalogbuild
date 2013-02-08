@@ -17,6 +17,7 @@ fpm --verbose \
 -t rpm \
 -n ${RPM_NAME} \
 -v ${RPM_VERSION} \
+--description "${DESCRIPTION}" \
 --iteration ${DATE_STRING} \
 --rpm-user root \
 --rpm-group root \
