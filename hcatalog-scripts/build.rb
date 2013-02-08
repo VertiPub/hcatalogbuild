@@ -70,3 +70,12 @@ buildTime = Time.now
 
 buildString = buildTime.strftime("%Y%m%d%H%M")
 
+workSpace = ENV['WORKSPACE]'
+Dir.chdir(workSpace)
+system "git submodule init"
+system "git submodule update"
+buildDir = workspace + "/" + arguments[:submodule]
+Dir.chdir(buildDir)
+#git checkout -b tobebuilt release-0.4.0
+
+
