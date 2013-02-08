@@ -22,8 +22,8 @@ Assumptions:
             c.  The build script will be passed the "INSTALL_DIR" into which to unpack the artifacts created by the build script
             d.  The build script will be passed the "RPM_DIR" into which to place the built RPM
             e.  The build script will inherit the "WORKSPACE"  environment variable
-	    f.  The build will pass in a description in a single quoted string in the "DESCRIPTION" env variable
-	6.  If the JOB_URL is defined it will be included in the Description, otherwise a snide comment will be included
+            f.  The build will pass in a description in a single quoted string in the "DESCRIPTION" env variable
+        6.  If the JOB_URL is defined it will be included in the Description, otherwise a snide comment will be included
 =end
 
 require 'optparse'
