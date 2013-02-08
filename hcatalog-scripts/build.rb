@@ -129,8 +129,8 @@ startingDir = Dir.pwd
 Dir.chdir(workSpace)
 system "git submodule init"
 system "git submodule update"
-gitRepoSHA = command("git rev-parse HEAD")
-gitRepoOrigin = command("git remote -v | grep fetch |  awk '{print $2}'")
+gitRepoSHA = system "git rev-parse HEAD"
+gitRepoOrigin = system "git remote -v | grep fetch |  awk '{print $2}'"
 rpmDescription = "\'Built under: " + jobURL + "\nFrom repository: " + gitRepoOrigin + "\nFrom SHA: " + gitRepoSHA + "\'"
 
 # Check out the correct branch of code in preparation to call the build
