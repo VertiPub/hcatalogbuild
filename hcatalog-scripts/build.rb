@@ -16,14 +16,14 @@ Assumptions:
             c.  The build script will inherit the "WORKSPACE"  environment variable
             d.  The build script will execute in the submodule directory
             e.  The build script will have a non-zero exit if the build fails for any reason
-        5.  The install script will generate the proper build root when passed the correct install directory
+        5.  The install script will generate the proper build root when passed the correct install directory, and build the RPM
             a.  The build script will be passed an "ARTIFACT_VERSION" environment variable
             b.  The build script will be passed the "DATE_STRING" environment variable should it need it
             c.  The build script will be passed the "INSTALL_DIR" into which to unpack the artifacts created by the build script
             d.  The build script will be passed the "RPM_DIR" into which to place the built RPM
             e.  The build script will inherit the "WORKSPACE"  environment variable
-
-
+	    f.  The build will pass in a description in a single quoted string in the "DESCRIPTION" env variable
+	6.  If the JOB_URL is defined it will be included in the Description, otherwise a snide comment will be included
 =end
 
 require 'optparse'
@@ -112,6 +112,10 @@ if ENV['WORKSPACE'].nil?
   raise "FATAL: WORKSPACE environment variable undefined, perhaps you should set it?"
 end
 workSpace = ENV['WORKSPACE']
+if ENV['JOB_URL'].nil?
+  jobURL = "This build was hand crafted lovingly and without Jenkins"
+end
+jobURL = ENV['JOB_URL']
 
 # Build the Date String for the "build string"
 
@@ -125,6 +129,9 @@ startingDir = Dir.pwd
 Dir.chdir(workSpace)
 system "git submodule init"
 system "git submodule update"
+gitRepoSHA = command("git rev-parse HEAD")
+gitRepoOrigin = command("git remote -v | grep fetch |  awk '{print $2}'")
+rpmDescription = "\'Built under: " + jobURL + "\nFrom repository: " + gitRepoOrigin + "\nFrom SHA: " + gitRepoSHA + "\'"
 
 # Check out the correct branch of code in preparation to call the build
 buildDir = workSpace + "/" + arguments[:submodule]
@@ -154,6 +161,7 @@ system buildCommand
 # Run the install dir create
 ENV['INSTALL_DIR'] = installDir
 ENV['RPM_DIR'] = rpmDir
+ENV['DESCRIPTION'] = rpmDescription
 scriptFullPath = workSpace + "/" + arguments[:installscript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
