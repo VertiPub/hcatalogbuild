@@ -167,4 +167,3 @@ ENV['DESCRIPTION'] = rpmDescription
 scriptFullPath = workSpace + "/" + arguments[:installscript]
 buildCommand = "/bin/sh -ex " + scriptFullPath
 system buildCommand
-
