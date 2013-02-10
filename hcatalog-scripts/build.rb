@@ -131,13 +131,15 @@ Dir.chdir(workSpace)
 system "rm -rf ./install-* ./rpms-*"
 system "git submodule init"
 system "git submodule update"
-gitRepoSHA = %x[git rev-parse HEAD]
-gitRepoOrigin = %x[git remote -v | grep fetch |  awk '{print $2}']
-rpmDescription = "Built under: #{jobURL} From repository: #{gitRepoOrigin} From SHA: #{gitRepoSHA}"
 
 # Check out the correct branch of code in preparation to call the build
 buildDir = workSpace + "/" + arguments[:submodule]
 Dir.chdir(buildDir)
+
+# Collect the git data for the RPM
+gitRepoSHA = %x[git rev-parse HEAD]
+gitRepoOrigin = %x[git remote -v | grep fetch |  awk '{print $2}']
+rpmDescription = "Built under: #{jobURL} From repository: #{gitRepoOrigin} From SHA: #{gitRepoSHA}"
 branchName = "tobebuilt-" + buildString
 command = "git checkout -b " + branchName + " " + arguments[:branchortag]
 system command
