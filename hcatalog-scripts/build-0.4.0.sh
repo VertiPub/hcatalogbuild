@@ -3,5 +3,4 @@
 # you have to make this directory because git doesn't create it automatically
 rm -rf $WORKSPACE/hcatalog/lib
 mkdir $WORKSPACE/hcatalog/lib
-mvn versions:set -DnewVersion=${ARTIFACT_VERSION}
-ant clean package -Dhcatalog.version=${ARTIFACT_VERSION} -Dmvn.hadoop.profile=hadoop23
+ant -Dhcatalog.version=${ARTIFACT_VERSION} -Dforrest.home=$FORREST_HOME tar
