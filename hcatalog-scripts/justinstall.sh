@@ -26,7 +26,7 @@ fpm --verbose \
 --iteration ${DATE_STRING} \
 --rpm-user root \
 --rpm-group root \
---url https://github.com/VertiPub/hcatalogbuild
+--url https://github.com/VertiPub/hcatalogbuild \
 --config-files opt/hcatalog-${ARTIFACT_VERSION}/sbin/hcat_server.sh \
 -C ${INSTALL_DIR} \
 opt
