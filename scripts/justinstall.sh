@@ -1,4 +1,5 @@
 #!/bin/sh
+ALTISCALE_RELEASE=${ALTISCALE_RELEASE:-0.1.0}
 
 mkdir -p --mode=0755 ${INSTALL_DIR}/opt
 cd ${INSTALL_DIR}/opt
@@ -10,7 +11,6 @@ cd ${INSTALL_DIR}/opt/hcatalog-${ARTIFACT_VERSION}/share/hcatalog
 ln -s ../../etc/hcatalog conf
 
 export RPM_NAME=vcc-hcatalog-${ARTIFACT_VERSION}
-export RPM_VERSION=0.1.0
 
 cd ${RPM_DIR}
 
@@ -21,7 +21,7 @@ fpm --verbose \
 -s dir \
 -t rpm \
 -n ${RPM_NAME} \
--v ${RPM_VERSION} \
+-v ${ALTISCALE_RELEASE} \
 --description "${DESCRIPTION}" \
 --iteration ${DATE_STRING} \
 --rpm-user root \
